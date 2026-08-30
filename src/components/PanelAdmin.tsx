@@ -3,15 +3,11 @@ import { supabase } from '../supabaseClient';
 import { PinLogin } from './PinLogin';
 
 export function PanelAdmin() {
-  // Estado para controlar el acceso por PIN
   const [sesionIniciada, setSesionIniciada] = useState(false);
   const [datosUsuario, setDatosUsuario] = useState<{ nombre: string; rol: string } | null>(null);
-
-  // Estados propios de tu panel de cajero/pedidos
   const [pedidos, setPedidos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Cargar pedidos al iniciar sesión con éxito
   useEffect(() => {
     if (sesionIniciada) {
       fetchPedidos();
@@ -35,7 +31,7 @@ export function PanelAdmin() {
     }
   };
 
-  // SI NO HAY SESIÓN, MUESTRA LA PANTALLA DE PIN Y BLOQUEA EL ACCESO AL RESTO
+  // Si no ha metido el PIN, muestra la pantalla de seguridad y frena el resto
   if (!sesionIniciada) {
     return (
       <PinLogin
@@ -48,10 +44,9 @@ export function PanelAdmin() {
     );
   }
 
-  // SI YA INICIÓ SESIÓN, MUESTRA EL PANEL COMPLETO
+  // Si ya metió el PIN correctamente, muestra el panel normal de pedidos
   return (
     <div className="p-4 md:p-6 bg-gray-50 min-h-screen">
-      {/* Cabecera del Panel */}
       <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
         <div>
           <h1 className="text-xl font-bold text-gray-800">Panel de Control</h1>
@@ -67,7 +62,6 @@ export function PanelAdmin() {
         </button>
       </div>
 
-      {/* Contenido Principal de Pedidos */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-4 md:p-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-gray-800">Gestión de Pedidos</h2>
