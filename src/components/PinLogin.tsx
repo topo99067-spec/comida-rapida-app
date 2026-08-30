@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { supabase } from '../supabaseClient'; // Ajusta la ruta a tu cliente de Supabase si es distinta
+import { supabase } from '../supabaseClient';
 
 interface PinLoginProps {
   onLoginSuccess: (usuario: { nombre: string; rol: string }) => void;
