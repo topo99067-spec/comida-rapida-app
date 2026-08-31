@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from './lib/supabase';
 import { UbicacionCliente } from './components/UbicacionCliente';
 import { PanelAdmin } from './components/PanelAdmin';
-import { PinLogin } from './components/PinLogin'; // <-- Importamos la pantalla del PIN
+import { PinLogin } from './components/PinLogin';
 import { ShoppingCart, CheckCircle, Clock, XCircle, ArrowLeft, Send, ShieldCheck, User, Upload, Image as ImageIcon } from 'lucide-react';
 
 interface Producto {
@@ -52,7 +52,7 @@ const PRODUCTOS_EJEMPLO: Producto[] = [
 export function App() {
   const [modo, setModo] = useState<'cliente' | 'cajero'>('cliente');
 
-  // Estado para controlar si el cajero ya puso su PIN correctamente
+  // Estados de control de seguridad para el cajero
   const [sesionCajeroIniciada, setSesionCajeroIniciada] = useState(false);
   const [datosCajero, setDatosCajero] = useState<{ nombre: string; rol: string } | null>(null);
 
@@ -172,10 +172,7 @@ export function App() {
             <User size={14} /> Vista Cliente
           </button>
           <button
-            onClick={() => {
-              setModo('cajero');
-              // Si cambian a cajero y no han iniciado sesión, aseguramos que pida PIN
-            }}
+            onClick={() => setModo('cajero')}
             className={`flex items-center gap-1 px-3 py-1.5 rounded-md transition-all cursor-pointer ${
               modo === 'cajero' ? 'bg-white text-amber-700 shadow-sm' : 'text-white hover:bg-amber-600'
             }`}
@@ -188,30 +185,17 @@ export function App() {
       {/* RENDERIZADO PRINCIPAL */}
       {modo === 'cajero' ? (
         <main className="max-w-4xl mx-auto p-4">
-          {/* Si el cajero NO ha iniciado sesión, mostramos el PIN Login */}
           {!sesionCajeroIniciada ? (
-            <div className="bg-white rounded-xl shadow-md p-6 mt-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-bold text-gray-800">Acceso al Panel de Cajero</h2>
-                <button
-                  onClick={() => setSesionCajeroIniciada(false)}
-                  className="text-xs text-red-500 font-semibold hidden"
-                >
-                  Cerrar Sesión
-                </button>
-              </div>
-              <PinLogin
-                titulo="Ingrese su PIN de Cajero"
-                onLoginSuccess={(usuario) => {
-                  setDatosCajero(usuario);
-                  setSesionCajeroIniciada(true);
-                }}
-              />
-            </div>
+            <PinLogin
+              titulo="Acceso Restringido - Cajero"
+              onLoginSuccess={(usuario) => {
+                setDatosCajero(usuario);
+                setSesionCajeroIniciada(true);
+              }}
+            />
           ) : (
             <div>
-              {/* Barra superior de sesión activa del cajero */}
-              <div className="bg-white p-4 rounded-lg shadow-sm mb-4 flex justify-between items-center border border-gray-200">
+              <div className="bg-white p-3 rounded-lg shadow-sm mb-4 flex justify-between items-center border border-gray-200">
                 <span className="text-xs text-gray-600">
                   Cajero activo: <b>{datosCajero?.nombre}</b> ({datosCajero?.rol})
                 </span>
@@ -385,6 +369,7 @@ export function App() {
 
                 <button
                   type="submit"
+
                   disabled={cargando}
                   className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all mt-4 cursor-pointer"
                 >
