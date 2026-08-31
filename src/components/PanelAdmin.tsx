@@ -18,7 +18,7 @@ export function PanelAdmin() {
     try {
       setLoading(true);
       const { data, error } = await supabase
-        .from('pedidos')
+        .from('ordenes')
         .select('*')
         .order('created_at', { ascending: false });
 
