@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { supabase } from '../supabaseClient';
+import { supabase } from '../lib/supabase';
 
 interface PinLoginProps {
   onLoginSuccess: (usuario: { nombre: string; rol: string }) => void;
