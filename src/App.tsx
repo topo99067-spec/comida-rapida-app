@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from './lib/supabase';
 import { UbicacionCliente } from './components/UbicacionCliente';
 import { PanelAdmin } from './components/PanelAdmin';
-import { PinLogin } from './components/PinLogin';
 import { ShoppingCart, CheckCircle, Clock, XCircle, ArrowLeft, Send, ShieldCheck, User, Upload, Image as ImageIcon } from 'lucide-react';
 
 interface Producto {
@@ -52,10 +51,6 @@ const PRODUCTOS_EJEMPLO: Producto[] = [
 export function App() {
   const [modo, setModo] = useState<'cliente' | 'cajero'>('cliente');
 
-  // Estados de control de seguridad para el cajero
-  const [sesionCajeroIniciada, setSesionCajeroIniciada] = useState(false);
-  const [datosCajero, setDatosCajero] = useState<{ nombre: string; rol: string } | null>(null);
-
   const [tasaCambio] = useState<number>(787.52);
   const [paso, setPaso] = useState<'menu' | 'pago' | 'estado'>('menu');
   const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null);
@@ -72,7 +67,6 @@ export function App() {
   // Orden Activa
   const [ordenActiva, setOrdenActiva] = useState<Orden | null>(null);
 
-  // Escuchar cambios de estado en tiempo real
   useEffect(() => {
     if (!ordenActiva) return;
 
@@ -102,7 +96,6 @@ export function App() {
     setPaso('pago');
   };
 
-  // Convertir imagen del capture a Base64
   const manejarArchivoImagen = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -185,37 +178,10 @@ export function App() {
       {/* RENDERIZADO PRINCIPAL */}
       {modo === 'cajero' ? (
         <main className="max-w-4xl mx-auto p-4">
-          {!sesionCajeroIniciada ? (
-            <PinLogin
-              titulo="Acceso Restringido - Cajero"
-              onLoginSuccess={(usuario) => {
-                setDatosCajero(usuario);
-                setSesionCajeroIniciada(true);
-              }}
-            />
-          ) : (
-            <div>
-              <div className="bg-white p-3 rounded-lg shadow-sm mb-4 flex justify-between items-center border border-gray-200">
-                <span className="text-xs text-gray-600">
-                  Cajero activo: <b>{datosCajero?.nombre}</b> ({datosCajero?.rol})
-                </span>
-                <button
-                  onClick={() => {
-                    setSesionCajeroIniciada(false);
-                    setDatosCajero(null);
-                  }}
-                  className="bg-red-50 text-red-600 border border-red-200 px-3 py-1 rounded-md text-xs font-medium hover:bg-red-100 transition"
-                >
-                  Cerrar Sesión
-                </button>
-              </div>
-              <PanelAdmin />
-            </div>
-          )}
+          <PanelAdmin />
         </main>
       ) : (
         <main className="max-w-md mx-auto p-4 space-y-4">
-          {/* PASO 1: MENÚ CON IMÁGENES */}
           {paso === 'menu' && (
             <div className="space-y-4">
               <h2 className="font-bold text-gray-800 text-base">Selecciona tu Pedido</h2>
@@ -250,7 +216,6 @@ export function App() {
             </div>
           )}
 
-          {/* PASO 2: FORMULARIO DE PAGO + CAPTURE */}
           {paso === 'pago' && productoSeleccionado && (
             <div className="bg-white rounded-xl shadow-md p-5 border border-gray-200 space-y-4">
               <button
@@ -338,7 +303,6 @@ export function App() {
                   </div>
                 </div>
 
-                {/* ADJUNTAR CAPTURE DE PAGO MÓVIL */}
                 <div>
                   <label className="block text-gray-700 font-semibold mb-1">
                     Capture de Pago Móvil (Opcional)
@@ -369,7 +333,6 @@ export function App() {
 
                 <button
                   type="submit"
-
                   disabled={cargando}
                   className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all mt-4 cursor-pointer"
                 >
@@ -379,7 +342,6 @@ export function App() {
             </div>
           )}
 
-          {/* PASO 3: ESTADO Y RASTREADOR */}
           {paso === 'estado' && ordenActiva && (
             <div className="space-y-4">
               <div className="bg-white rounded-xl shadow-md p-5 border border-gray-200 text-center space-y-3">

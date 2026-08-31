@@ -31,27 +31,29 @@ export function PanelAdmin() {
     }
   };
 
-  // Si no ha metido el PIN, muestra la pantalla de seguridad y frena el resto
+  // BLOQUEO ABSOLUTO: Si no hay sesión iniciada, muestra obligatoriamente el PIN y frena todo lo demás
   if (!sesionIniciada) {
     return (
-      <PinLogin
-        titulo="Panel de Cajero / Admin"
-        onLoginSuccess={(usuario) => {
-          setDatosUsuario(usuario);
-          setSesionIniciada(true);
-        }}
-      />
+      <div className="flex items-center justify-center min-h-[70vh] w-full">
+        <PinLogin
+          titulo="Seguridad de Cajero"
+          onLoginSuccess={(usuario) => {
+            setDatosUsuario(usuario);
+            setSesionIniciada(true);
+          }}
+        />
+      </div>
     );
   }
 
-  // Si ya metió el PIN correctamente, muestra el panel normal de pedidos
+  // Panel real protegido
   return (
     <div className="p-4 md:p-6 bg-gray-50 min-h-screen">
       <div className="flex justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-100">
         <div>
           <h1 className="text-xl font-bold text-gray-800">Panel de Control</h1>
           <p className="text-xs text-gray-500">
-            Conectado como: <b>{datosUsuario?.nombre}</b> ({datosUsuario?.rol})
+            Cajero: <b>{datosUsuario?.nombre}</b> ({datosUsuario?.rol})
           </p>
         </div>
         <button
@@ -67,7 +69,7 @@ export function PanelAdmin() {
           <h2 className="text-lg font-semibold text-gray-800">Gestión de Pedidos</h2>
           <button
             onClick={fetchPedidos}
-            className="bg-orange-600 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-orange-700 transition"
+            className="bg-amber-500 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-amber-600 transition"
           >
             Actualizar Lista
           </button>
@@ -93,18 +95,18 @@ export function PanelAdmin() {
                 {pedidos.map((pedido) => (
                   <tr key={pedido.id} className="hover:bg-gray-50">
                     <td className="p-3 font-medium text-gray-800">
-                      {pedido.nombre_cliente || 'Cliente'} <br/>
-                      <span className="text-xs text-gray-400 font-normal">{pedido.telefono}</span>
+                      {pedido.cliente_nombre || 'Cliente'} <br/>
+                      <span className="text-xs text-gray-400 font-normal">{pedido.cliente_telefono}</span>
                     </td>
                     <td className="p-3 text-gray-600 max-w-xs truncate">
-                      {pedido.detalle_orden || 'Orden de comida'}
+                      ${pedido.monto_usd} ({pedido.banco_emisor})
                     </td>
                     <td className="p-3 font-semibold text-gray-800">
-                      ${pedido.total?.toFixed(2) || '0.00'}
+                      ${pedido.monto_usd?.toFixed(2) || '0.00'}
                     </td>
                     <td className="p-3">
                       <span className="px-2 py-1 text-xs rounded-full font-medium bg-yellow-100 text-yellow-800">
-                        {pedido.estado || 'Pendiente'}
+                        {pedido.estado || 'PENDIENTE'}
                       </span>
                     </td>
                     <td className="p-3 text-xs text-gray-500">
